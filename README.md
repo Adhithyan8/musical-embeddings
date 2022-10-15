@@ -1,1 +1,1 @@
-"# musical-shrooms" 
+musical-shrooms 
