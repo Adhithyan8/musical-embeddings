@@ -61,10 +61,10 @@ class FCN(nn.Module):
         # Dense
         x = x.view(x.size(0), -1)
         x = self.dropout(x)
-        x = self.dense(x)
-        x = nn.Sigmoid()(x)
+        representation = self.dense(x)
+        x = nn.Sigmoid()(representation)
 
-        return x
+        return x, representation
 
 
 class Musicnn(nn.Module):
@@ -143,10 +143,10 @@ class Musicnn(nn.Module):
 
         out = self.relu(self.bn(self.dense1(out)))
         out = self.dropout(out)
-        out = self.dense2(out)
-        out = nn.Sigmoid()(out)
+        representation = self.dense2(out)
+        out = nn.Sigmoid()(representation)
 
-        return out
+        return out, representation
 
 
 class CRNN(nn.Module):
@@ -207,10 +207,10 @@ class CRNN(nn.Module):
 
         # Dense
         x = self.dropout(x)
-        x = self.dense(x)
-        x = nn.Sigmoid()(x)
+        representation = self.dense(x)
+        x = nn.Sigmoid()(representation)
 
-        return x
+        return x, representation
 
 
 class SampleCNN(nn.Module):
@@ -251,9 +251,9 @@ class SampleCNN(nn.Module):
         x = self.layer11(x)
         x = x.squeeze(-1)
         x = self.dropout(x)
-        x = self.dense(x)
-        x = nn.Sigmoid()(x)
-        return x
+        representation = self.dense(x)
+        x = nn.Sigmoid()(representation)
+        return x, representation
 
 
 class SampleCNNSE(nn.Module):
@@ -297,9 +297,9 @@ class SampleCNNSE(nn.Module):
         x = x.squeeze(-1)
         x = nn.ReLU()(self.bn(self.dense1(x)))
         x = self.dropout(x)
-        x = self.dense2(x)
-        x = nn.Sigmoid()(x)
-        return x
+        representation = self.dense2(x)
+        x = nn.Sigmoid()(representation)
+        return x, representation
 
 
 class ShortChunkCNN(nn.Module):
@@ -370,10 +370,10 @@ class ShortChunkCNN(nn.Module):
         x = self.bn(x)
         x = self.relu(x)
         x = self.dropout(x)
-        x = self.dense2(x)
-        x = nn.Sigmoid()(x)
+        representation = self.dense2(x)
+        x = nn.Sigmoid()(representation)
 
-        return x
+        return x, representation
 
 
 class ShortChunkCNN_Res(nn.Module):
@@ -442,10 +442,10 @@ class ShortChunkCNN_Res(nn.Module):
         x = self.bn(x)
         x = self.relu(x)
         x = self.dropout(x)
-        x = self.dense2(x)
-        x = nn.Sigmoid()(x)
+        representation = self.dense2(x)
+        x = nn.Sigmoid()(representation)
 
-        return x
+        return x, representation
 
 
 class CNNSA(nn.Module):
@@ -541,10 +541,10 @@ class CNNSA(nn.Module):
 
         # Dense
         x = self.dropout(x)
-        x = self.dense(x)
-        x = nn.Sigmoid()(x)
+        representation = self.dense(x)
+        x = nn.Sigmoid()(representation)
 
-        return x
+        return x, representation
 
 
 class HarmonicCNN(nn.Module):
@@ -614,7 +614,7 @@ class HarmonicCNN(nn.Module):
         x = self.bn(x)
         x = self.relu(x)
         x = self.dropout(x)
-        x = self.dense2(x)
-        x = nn.Sigmoid()(x)
+        representation = self.dense2(x)
+        x = nn.Sigmoid()(representation)
 
-        return x
+        return x, representation
