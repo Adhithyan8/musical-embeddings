@@ -2,6 +2,7 @@ import numpy as np
 import librosa
 import model
 import torch
+import deeplake
 
 device = torch.device("cuda:0")
 models = {
@@ -33,14 +34,15 @@ def run(path,key="fcn"):
     fcn_model.eval()
 
     input_length = input_lengths[key]
+
     signal, _ = librosa.core.load(path, sr=SAMPLE_RATE)
     length = len(signal)
     hop = length // 2 - input_length // 2
-    print("length, input_length", length, input_length)
+    # print("length, input_length", length, input_length)
     x = torch.zeros(1, input_length)
     x[0] = torch.Tensor(signal[hop : hop + input_length]).unsqueeze(0)
     # x = torch.Variable(x.to(device))
-    print("x.max(), x.min(), x.mean()", x.max(), x.min(), x.mean())
+    # print("x.max(), x.min(), x.mean()", x.max(), x.min(), x.mean())
 
 
     out, representation = fcn_model(x.to(device))
@@ -50,5 +52,6 @@ def run(path,key="fcn"):
     'instrument---bass', 'instrument---computer', 'mood/theme---film', 
     'genre---triphop', 'genre---jazz', 'genre---funk', 'mood/theme---relaxing'])
 
-    print(np.array(TAGS)[torch.topk(out, k=10)[1].detach().cpu().numpy()[0]])
+    # print(np.array(TAGS)[torch.topk(out, k=10)[1].detach().cpu().numpy()[0]])
+    return representation
 
