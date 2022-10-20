@@ -32,28 +32,23 @@ input_lengths = {
 SAMPLE_RATE = 16000
 def infer(path,model_path,key="fcn"):
 
-    fcn_model = models[key]
+    model = models[key]
     S = torch.load(model_path)
     if 'spec.mel_scale.fb' in S.keys():
-      fcn_model.spec.mel_scale.fb = S['spec.mel_scale.fb']
-    fcn_model.load_state_dict(S)
-    fcn_model.eval()
+      model.spec.mel_scale.fb = S['spec.mel_scale.fb']
+    model.load_state_dict(S)
+    model.eval()
 
     input_length = input_lengths[key]
 
     signal, _ = librosa.core.load(path, sr=SAMPLE_RATE)
     length = len(signal)
-    hop = length // 2 - input_length // 2
-    # print("length, input_length", length, input_length)
-    x = torch.zeros(1, input_length)
-    x[0] = torch.Tensor(signal[hop : hop + input_length]).unsqueeze(0)
-    # x = torch.Variable(x.to(device))
-    # print("x.max(), x.min(), x.mean()", x.max(), x.min(), x.mean())
+    x = torch.stack(
+            [torch.Tensor(signal[i:i+input_length]).unsqeeze(0) for i in range(0,input_length*int(length/input_length), input_length)],
+            dim=0
+            )
+    out, representation = model(x.to(device))
+    
+   return torch.mean(representation, dim=0, keepdim=True).detach().cpu()
 
-
-    out, representation = fcn_model(x.to(device))
-
-
-    # print(np.array(TAGS)[torch.topk(out, k=10)[1].detach().cpu().numpy()[0]])
-    return representation.detach().cpu()
 
