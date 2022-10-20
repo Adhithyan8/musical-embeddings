@@ -46,7 +46,7 @@ def infer(path,model_path,key="fcn"):
     signal, _ = librosa.core.load(path, sr=SAMPLE_RATE)
     length = len(signal)
     x = torch.stack(
-            [torch.Tensor(signal[i:i+input_length]).unsqueeze(0) for i in range(0,input_length*int(length/input_length), input_length)],
+            [torch.Tensor(signal[i:i+input_length]) for i in range(0,input_length*int(length/input_length), input_length)],
             dim=0
             )
     out, representation = model(x.to(device))
