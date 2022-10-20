@@ -2,7 +2,6 @@ import numpy as np
 import librosa
 import model
 import torch
-import deeplake
 
 device = torch.device("cuda:0")
 
@@ -12,22 +11,22 @@ TAGS = np.array(['genre---downtempo', 'genre---ambient', 'genre---rock', 'instru
     'genre---triphop', 'genre---jazz', 'genre---funk', 'mood/theme---relaxing'])
 models = {
             "fcn": model.FCN().to(device),
-            # "musicnn": model.Musicnn(dataset=DATASET).to(self.device),
+            "musicnn": model.Musicnn(dataset="jamendo").to(device),
             # "crnn": model.CRNN().to(self.device),
             # "sample": model.SampleCNN().to(self.device),
             # "se": model.SampleCNNSE().to(self.device),
             # "attention": model.CNNSA().to(self.device),
-            # "hcnn": model.HarmonicCNN().to(self.device),
+            "hcnn": model.HarmonicCNN().to(device),
         }
 
 input_lengths = {
             "fcn": 29 * 16000,
-            # "musicnn": 3 * 16000,
+            "musicnn": 3 * 16000,
             # "crnn": 29 * 16000,
             # "sample": 59049,
             # "se": 59049,
             # "attention": 15 * 16000,
-            # "hcnn": 5 * 16000,
+            "hcnn": 5 * 16000,
         }
 
 SAMPLE_RATE = 16000
@@ -55,6 +54,6 @@ def infer(path,model_path,key="fcn"):
     out, representation = fcn_model(x.to(device))
 
 
-    print(np.array(TAGS)[torch.topk(out, k=10)[1].detach().cpu().numpy()[0]])
-    return representation
+    # print(np.array(TAGS)[torch.topk(out, k=10)[1].detach().cpu().numpy()[0]])
+    return representation.detach().cpu()
 
