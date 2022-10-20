@@ -49,6 +49,4 @@ def infer(path,model_path,key="fcn"):
             )
     out, representation = model(x.to(device))
     
-   return torch.mean(representation, dim=0, keepdim=True).detach().cpu()
-
-
+    return torch.mean(representation, dim=0, keepdim=True).detach().cpu()
