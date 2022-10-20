@@ -2,6 +2,7 @@ import numpy as np
 import librosa
 import model
 import torch
+from pathlib import Path, PurePath
 
 device = torch.device("cuda:0")
 
@@ -30,6 +31,7 @@ input_lengths = {
         }
 
 SAMPLE_RATE = 16000
+
 def infer(path,model_path,key="fcn"):
 
     model = models[key]
@@ -49,6 +51,16 @@ def infer(path,model_path,key="fcn"):
             )
     out, representation = model(x.to(device))
     
-   return torch.mean(representation, dim=0, keepdim=True).detach().cpu()
+    return torch.mean(representation, dim=0, keepdim=True).detach().cpu()
 
-
+def embedding_gen(parent_dir, model_path, key):
+    parent_dir = Path(parent_dir)
+    dir_path = parent_dir.joinpath("genres_original")
+    embeddings_dir = parent_dir.joinpath("embeddings").joinpath(key)
+    for genre in dir_path.iterdir():
+        genre_name = PurePath(genre).parts[-1]
+        torch.save(
+                    torch.stack([infer(path=file_path, model_path=model_path, key=key).detach().cpu() for file_path in genre.iterdir()]),
+                    embeddings_dir.joinpath(genre_name)
+                    )
+        print(genre_name+" done")
