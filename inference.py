@@ -14,8 +14,8 @@ models = {
             "fcn": model.FCN().to(device),
             "musicnn": model.Musicnn(dataset="jamendo").to(device),
             "crnn": model.CRNN().to(device),
-            # "sample": model.SampleCNN().to(self.device),
-            # "se": model.SampleCNNSE().to(self.device),
+            "sample": model.SampleCNN().to(device),
+            "se": model.SampleCNNSE().to(device),
             "attention": model.CNNSA().to(device),
             "hcnn": model.HarmonicCNN().to(device),
         }
@@ -24,8 +24,8 @@ input_lengths = {
             "fcn": 29 * 16000,
             "musicnn": 3 * 16000,
             "crnn": 29 * 16000,
-            # "sample": 59049,
-            # "se": 59049,
+            "sample": 59049,
+            "se": 59049,
             "attention": 15 * 16000,
             "hcnn": 5 * 16000,
         }
@@ -51,12 +51,12 @@ def infer(path,model_path,key="fcn"):
             )
     out, representation = model(x.to(device))
     
-    return torch.mean(representation, dim=0, keepdim=True).detach().cpu()
+    return torch.max(representation, dim=0, keepdim=True).values.detach().cpu()
 
 def embedding_gen(parent_dir, model_path, key):
     parent_dir = Path(parent_dir)
     dir_path = parent_dir.joinpath("genres_original")
-    embeddings_dir = parent_dir.joinpath("embeddings").joinpath(key)
+    embeddings_dir = parent_dir.joinpath("embeddings_max").joinpath(key)
     embeddings_dir.mkdir(parents=True, exist_ok=True)
     for genre in dir_path.iterdir():
         genre_name = PurePath(genre).parts[-1]
