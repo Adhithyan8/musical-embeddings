@@ -59,10 +59,10 @@ class FCN(nn.Module):
         x = self.layer5(x)
 
         # Dense
-        x = x.view(x.size(0), -1)
-        x = self.dropout(x)
-        representation = self.dense(x)
-        x = nn.Sigmoid()(representation)
+        representation = x.view(x.size(0), -1)
+        x = self.dropout(representation)
+        x = self.dense(x)
+        x = nn.Sigmoid()(x)
 
         return x, representation
 
@@ -141,10 +141,11 @@ class Musicnn(nn.Module):
         out = torch.cat([mp, avgp], dim=1)
         out = out.squeeze(2)
 
-        out = self.relu(self.bn(self.dense1(out)))
+        representation = self.dense1(out)
+        out = self.relu(self.bn(representation))
         out = self.dropout(out)
-        representation = self.dense2(out)
-        out = nn.Sigmoid()(representation)
+        out = self.dense2(out)
+        out = nn.Sigmoid()(out)
 
         return out, representation
 
@@ -203,12 +204,12 @@ class CRNN(nn.Module):
         x = x.squeeze(2)
         x = x.permute(0, 2, 1)
         x, _ = self.layer5(x)
-        x = x[:, -1, :]
+        representation = x[:, -1, :]
 
         # Dense
-        x = self.dropout(x)
-        representation = self.dense(x)
-        x = nn.Sigmoid()(representation)
+        x = self.dropout(representation)
+        x = self.dense(x)
+        x = nn.Sigmoid()(x)
 
         return x, representation
 
@@ -249,10 +250,10 @@ class SampleCNN(nn.Module):
         x = self.layer9(x)
         x = self.layer10(x)
         x = self.layer11(x)
-        x = x.squeeze(-1)
-        x = self.dropout(x)
-        representation = self.dense(x)
-        x = nn.Sigmoid()(representation)
+        representation = x.squeeze(-1)
+        x = self.dropout(representation)
+        x = self.dense(x)
+        x = nn.Sigmoid()(x)
         return x, representation
 
 
@@ -295,10 +296,11 @@ class SampleCNNSE(nn.Module):
         x = self.layer10(x)
         x = self.layer11(x)
         x = x.squeeze(-1)
-        x = nn.ReLU()(self.bn(self.dense1(x)))
+        representation = self.dense1(x)
+        x = nn.ReLU()(self.bn(representation))
         x = self.dropout(x)
-        representation = self.dense2(x)
-        x = nn.Sigmoid()(representation)
+        x = self.dense2(x)
+        x = nn.Sigmoid()(x)
         return x, representation
 
 
@@ -366,12 +368,12 @@ class ShortChunkCNN(nn.Module):
         x = x.squeeze(2)
 
         # Dense
-        x = self.dense1(x)
-        x = self.bn(x)
+        representation = self.dense1(x)
+        x = self.bn(representation)
         x = self.relu(x)
         x = self.dropout(x)
-        representation = self.dense2(x)
-        x = nn.Sigmoid()(representation)
+        x = self.dense2(x)
+        x = nn.Sigmoid()(x)
 
         return x, representation
 
@@ -438,12 +440,12 @@ class ShortChunkCNN_Res(nn.Module):
         x = x.squeeze(2)
 
         # Dense
-        x = self.dense1(x)
-        x = self.bn(x)
+        representation = self.dense1(x)
+        x = self.bn(representation)
         x = self.relu(x)
         x = self.dropout(x)
-        representation = self.dense2(x)
-        x = nn.Sigmoid()(representation)
+        x = self.dense2(x)
+        x = nn.Sigmoid()(x)
 
         return x, representation
 
@@ -537,12 +539,12 @@ class CNNSA(nn.Module):
         # Transformer encoder
         x = self.encoder(x)
         x = x[-1]
-        x = self.pooler(x)
+        representation = self.pooler(x)
 
         # Dense
-        x = self.dropout(x)
-        representation = self.dense(x)
-        x = nn.Sigmoid()(representation)
+        x = self.dropout(representation)
+        x = self.dense(x)
+        x = nn.Sigmoid()(x)
 
         return x, representation
 
@@ -610,11 +612,11 @@ class HarmonicCNN(nn.Module):
         x = x.squeeze(2)
 
         # Dense
-        x = self.dense1(x)
-        x = self.bn(x)
+        representation = self.dense1(x)
+        x = self.bn(representation)
         x = self.relu(x)
         x = self.dropout(x)
-        representation = self.dense2(x)
-        x = nn.Sigmoid()(representation)
+        x = self.dense2(x)
+        x = nn.Sigmoid()(x)
 
         return x, representation
