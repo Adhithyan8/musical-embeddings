@@ -51,12 +51,12 @@ def infer(path,model_path,key="fcn"):
             )
     out, representation = model(x.to(device))
     
-    return torch.max(representation, dim=0, keepdim=True).values.detach().cpu()
+    return torch.mean(representation, dim=0, keepdim=True).detach().cpu()
 
 def embedding_gen(parent_dir, model_path, key):
     parent_dir = Path(parent_dir)
     dir_path = parent_dir.joinpath("genres_original")
-    embeddings_dir = parent_dir.joinpath("embeddings_max").joinpath(key)
+    embeddings_dir = parent_dir.joinpath("embeddings").joinpath(key)
     embeddings_dir.mkdir(parents=True, exist_ok=True)
     for genre in dir_path.iterdir():
         genre_name = PurePath(genre).parts[-1]
