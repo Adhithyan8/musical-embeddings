@@ -67,7 +67,7 @@ def embedding_gen(parent_dir, model_path, key):
                     )
         print(genre_name+" done")
         
-def run(models=MODELS,parent_dir, model_parent_path = '/content/musical-shrooms/models/jamendo/'):
+def run(parent_dir, models=MODELS,model_parent_path = '/content/musical-shrooms/models/jamendo/'):
     parent_dir = Path(parent_dir)
     model_parent_path = Path(parent_dir)
 
