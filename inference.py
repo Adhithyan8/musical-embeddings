@@ -5,6 +5,7 @@ import torch
 from pathlib import Path, PurePath
 
 device = torch.device("cuda:0")
+MODELS = ["fcn", "musicnn","crnn","sample","se","attention", "hcnn"]
 
 TAGS = np.array(['genre---downtempo', 'genre---ambient', 'genre---rock', 'instrument---synthesizer', 'genre---atmospheric', 'genre---indie', 'instrument---electricpiano', 'genre---newage', 'instrument---strings', 'instrument---drums', 'instrument---drummachine', 'genre---techno', 'instrument---guitar', 'genre---alternative', 'genre---easylistening', 'genre---instrumentalpop', 'genre---chillout', 'genre---metal', 'mood/theme---happy', 'genre---lounge', 'genre---reggae', 'genre---popfolk', 'genre---orchestral', 'instrument---acousticguitar', 'genre---poprock', 'instrument---piano', 'genre---trance', 'genre---dance', 'instrument---electricguitar', 'genre---soundtrack', 'genre---house', 'genre---hiphop', 'genre---classical', 'mood/theme---energetic', 'genre---electronic', 'genre---world', 'genre---experimental', 'instrument---violin', 'genre---folk', 'mood/theme---emotional', 
     'instrument---voice', 'instrument---keyboard', 'genre---pop', 
@@ -65,3 +66,60 @@ def embedding_gen(parent_dir, model_path, key):
                     embeddings_dir.joinpath(genre_name)
                     )
         print(genre_name+" done")
+        
+def run(models=MODELS,parent_dir, model_parent_path = '/content/musical-shrooms/models/jamendo/'):
+    parent_dir = Path(parent_dir)
+    model_parent_path = Path(parent_dir)
+
+    for model in models:
+      ix_dict = dict()
+      model_path = model_parent_path.joinpath(model).joinpath('best_model.pth')
+      dir_path = parent_dir.joinpath("genres_original")
+      embeddings_dir = parent_dir.joinpath("embeddings").joinpath(model)
+      embeddings_dir.mkdir(parents=True, exist_ok=True)
+      print(model + " running!")
+      for genre in dir_path.iterdir():
+          li = []
+          genre_name = genre.parts[-1]
+          if !genre_name.endswith("_tempo_50") and !genre_name.endswith("_pitch_50"):
+              ix_dict[genre_name] = list()
+              for file_path in genre.iterdir():
+                try:
+                  ix_dict[genre_name].append(file_path.parts[-1])
+                  li.append(infer(path=file_path, model_path=model_path, key=model).detach().cpu())
+                except:
+                  print(file_path)
+                  break
+              torch.save(
+                          torch.stack(li),
+                          embeddings_dir.joinpath(genre_name)
+                          )
+              print(genre_name+" done")
+              with open(embeddings_dir.joinpath('original_ix_dict.pickle'), 'wb') as handle:
+                pickle.dump(ix_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    
+    for model in models:
+      ix_dict = dict()
+      model_path = model_parent_path.joinpath(model).joinpath('best_model.pth')
+      dir_path = parent_dir.joinpath("genres_ood")
+      embeddings_dir = parent_dir.joinpath("embeddings").joinpath(model)
+      embeddings_dir.mkdir(parents=True, exist_ok=True)
+      print(model + " running!")
+      for genre in dir_path.iterdir():
+          li = []
+          genre_name = genre.parts[-1]
+          ix_dict[genre_name] = list()
+          for file_path in genre.iterdir():
+            try:
+              ix_dict[genre_name].append(file_path.parts[-1])
+              li.append(infer(path=file_path, model_path=model_path, key=model).detach().cpu())
+            except:
+              print(file_path)
+              break
+          torch.save(
+                      torch.stack(li),
+                      embeddings_dir.joinpath(genre_name)
+                      )
+          print(genre_name+" done")
+          with open(embeddings_dir.joinpath('ood_ix_dict.pickle'), 'wb') as handle:
+            pickle.dump(ix_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
