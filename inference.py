@@ -81,7 +81,7 @@ def run(models=MODELS,parent_dir, model_parent_path = '/content/musical-shrooms/
       for genre in dir_path.iterdir():
           li = []
           genre_name = genre.parts[-1]
-          if !genre_name.endswith("_tempo_50") and !genre_name.endswith("_pitch_50"):
+          if not '_' in genre_name:
               ix_dict[genre_name] = list()
               for file_path in genre.iterdir():
                 try:
